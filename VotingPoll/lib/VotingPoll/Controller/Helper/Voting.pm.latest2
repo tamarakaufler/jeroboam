@@ -1,0 +1,254 @@
+package VotingPoll::Controller::Helper::Voting;
+
+use v5.10;
+
+=head1 SYNOPSIS
+
+This library contains helper subroutines for the Voting controller
+
+=cut
+
+use parent 'Exporter';
+
+use Data::Serializer;
+use JSON;
+
+our @EXPORT_OK = qw(
+                        get_vote_results
+                        get_counties_info
+                        get_parties_info
+                        store_yes_vote
+                        get_current_stats4constituency
+                        create_results_chart
+                   );
+ 
+## Configuration : should be in an external file or database
+my $cachetime = 604800;			## a week
+
+=head2 get_national_results
+
+=cut
+
+sub get_vote_results {
+	my ($c, $const) = @_;
+
+	my $search = {};
+	$search->{ constituency } = $const if $const;
+
+	my $options = { 
+      			   '+select'    => [ { count => 'party', -as => 'count' } ],
+                            columns 	=> [ ('party') ],
+                            distinct	=> 1,
+                            order_by 	=> { '-desc' => 'count' },
+                      };
+
+	
+	my @results = $c->model('VotingPollDB::VotingStat')->search( $search,
+						     		     $options);
+
+	my $massaged   = _massage_votes(\@results);
+
+	return $massaged;
+
+}
+
+=head2 geGt_counties_info
+
+gets county information: 	name
+		    		constituencies
+
+IN:	Catalyst object
+OUT:	hashref of hashrefs, keyed on id: 
+                                {
+                                        name => ...,
+                                        constituencies => 	[
+                                                                    { 
+                                                                            name => ...,
+                                                                            id   => ...,
+                                                                    }
+                                                                ]
+                                }
+
+=cut
+
+sub get_counties_info {
+	my ($c) = @_;
+
+        my ($counties);
+
+	#$c->cache->set('counties', '');
+
+	my $serializer = Data::Serializer->new();
+
+	my $cacheinfo  = $c->cache->get( 'counties' );
+
+	if ( $cacheinfo ) {
+		return $serializer->deserialize( $cacheinfo );
+	}
+	else {
+		$counties 		= _get_counties_info($c);
+
+		$c->cache->set( 'counties', $serializer->serialize($counties), $cachetime );
+
+		return $counties;
+	}	
+
+}
+
+sub _get_counties_info {
+	my ($c) = @_;
+
+	my ($county_rs, $constituencies_rs, $county, $constituencies);
+
+	$county_info = {};
+
+	$county_rs = $c->model('VotingPollDB::County')->search({}, { prefetch => 'constituencies' });
+	while ( my $county = $county_rs->next ) {
+		$constituencies_rs = $county->constituencies;
+		$constituencies    = _massage_constituency_data($constituencies_rs);
+
+		$county_info->{ $county->id } = {
+                                                        name	    	=> $county->name, 
+                                                        constituencies 	=> $constituencies,
+                                                };
+		
+	}
+	return $county_info;
+
+}
+
+sub get_parties_info {
+	my ($c, $const) = @_;
+
+	my (@parties, $party_info);
+
+	$party_info = [];
+
+	$const 	  = $c->model('VotingPollDB::Constituency')->find({ id => $const });
+	$party_rs = $const->parties;
+
+	while ( my $party = $party_rs->next ) {
+		my $info = {
+				id	=> $party->id, 
+				name	=> $party->name, 
+			   };
+		push @$party_info, $info;
+		
+	}
+	return $party_info;
+
+}
+
+=head3
+
+=cut
+
+sub _massage_constituency_data {
+	my ($const_rs) = @_;
+
+	my $massaged = [];
+	while (my $const = $const_rs->next) {
+		push @$massaged, { 
+                                        id  	=> $const->id,
+                                        name	=> $const->name,
+                                 }; 	
+	}
+
+	return $massaged;
+}
+
+=head3 store_yes_vote
+
+IN:		Catalyst object
+		vote info hashref:
+                    {
+                            constituency => const_id,
+                            party		 => party_id
+                    }
+
+=cut
+
+sub store_yes_vote {
+	my ($c, $vote) = @_;
+
+	## store the vote info
+	eval {
+		$c->model('VotingPollDB::YesNoVoting')->create({ votes => 'Yes'});
+		$c->model('VotingPollDB::VotingStat')->create($vote);
+	};
+
+	return if $@;
+	return 1;
+}
+
+sub get_current_stats4constituency {
+	my ($c, $const_id) = @_;
+
+	my $stats = $c->model('VotingPollDB::VotingStats')->create($vote);
+}
+
+=head2 create_results_chart
+    creates javascript body of callback for drawing a chart
+
+IN:     $dom_id  ... DOM element id (for attaching the chart) 
+OUT:    $data    ... array of arrays ... [[party, vote count], [party, vote_count], ...]
+
+=cut
+
+sub create_results_chart {
+    my ($dom_id, $headers, $data) = @_;
+
+    my ($callback, $rows,);
+
+    $callback = <<CALLBACK;
+    // Create the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', $headers->[0]);
+    data.addColumn('number', $headers->[1]);
+CALLBACK
+
+    $rows = to_json($data);
+
+say $rows;
+
+    $callback .= <<CALLBACK;
+    //var rows = [["Liberal","4"],["Conservative","2"],["Labour","2"],["Green","1"]];
+    //var rows = JSON.parse($rows);
+    var rows = [ ['Liberal', 5], ['Labour', 1], ['Green', 1], ['Conservative', 2] ];
+
+    data.addRows(rows);
+
+    // Set chart options
+    var options_nat = { 'title':'National Results',
+                        'width':400,
+                        'height':300};
+
+    // Instantiate and draw our chart, passing in some options.
+    var nat_chart   = new google.visualization.PieChart(document.getElementById('nat_results_chart'));
+    nat_chart.draw(data, options_nat);
+
+CALLBACK
+
+    return $callback;
+
+}
+
+=head3 _massage_national_voting
+
+=cut
+
+sub _massage_votes {
+	my ($votes) = @_;
+
+	my $national_results = [];
+	foreach my $vote ( @$votes ) {
+		#push @$national_results, { 
+                #                                name	=> $vote->party->name,
+                #                                count	=> $vote->get_column('count'), 
+                #                         };
+		push @$national_results, [$vote->party->name, $vote->get_column('count')];
+	}
+	return $national_results;
+}
+
+1;

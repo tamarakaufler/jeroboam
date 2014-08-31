@@ -1,0 +1,74 @@
+<div class='layout'>
+
+    <section id='intro'>
+        <div>
+            Welcome. You can help predict the oucome of the 2013 Elections by taking part in our straw poll. Please tell us if you are going to vote. If you are, you will be able to select your constituency and indicate which party you are voting for.
+        </div>
+        <br />
+    
+        <div id='selections'>
+            <span class=''>I am going to vote.</span>
+            <span class=''><input type="radio" class="yes_no_vote" name="yes_no" value="Yes">Yes</span>
+            <span class=''><input type="radio" class="yes_no_vote" name="yes_no" value="No">No</span>
+            <span class=''><input type="radio" class="yes_no_vote" name="yes_no" value="Undecided">Undecided</span>
+        </div>
+        <br />
+    
+        <div id="menus">
+    
+            <div id="counties" class="menu">
+                <select id="counties_menu"></select>
+            </div>
+        
+            <div id="constituencies" class="menu">
+                <select id="constit_menu"></select>
+            </div>
+        
+            <div id="parties" class="menu">
+                <select id="parties_menu"></select>
+            </div>
+        
+            <div id="submit">
+                <br />
+                <button type="button" id="submit">Submit</button>
+            </div>
+    
+        </div>
+    </section>
+
+</div>
+
+<br />
+<div class="layout" id="results">
+    <div id="national_results">
+    <span class="results_header">National results</span>
+    <table id="national_results">
+        <tr>
+        <td>Party</td>
+        <td>Percentage of votes</td>
+        </tr>
+        [% FOREACH party IN national_results %]
+            <tr>
+            <td>[% party.name %]</td>
+            <td>[% party.count %]</td>
+            </tr>
+        [% END %]
+    </table>
+    </div>
+
+    <!--Div that will hold the pie chart-->
+    <div id="nat_results_chart"></div>
+
+    <br />
+
+    <div class="layout" id="constit_results">
+    <span class="results_header">Constituency results</span>
+    <table id="constit_results">
+    </table>
+    </div>
+
+    <!--Div that will hold the pie chart-->
+    <div id="constit_results_chart"></div>
+
+</div>
+

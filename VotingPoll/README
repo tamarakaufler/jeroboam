@@ -1,0 +1,73 @@
+Requirements: Linux/MySQL/Perl (5.10 minimum)
+--------------------------------------------
+--------------------------------------------
+
+1)
+DATABASE
+========
+database SQL : in sql directory: files user.sql and schema sql will create the mysql user with access to the voting_poll database, the database and its tables with dummy data 
+
+2)
+TESTING THE APPLICATION
+=======================
+The application is written in Perl, on top of the Catalyst web framework. There will be requirements for extra modules:
+
+Catalyst
+File::Cache
+DBIx::Class
+Template::Toolkit
+JSON
+
+To test the application, please, run the development server:
+	script/votingpoll_server.pl -p 3010
+
+then in the browser:
+	http://localhost:3010/voting/poll
+
+3)
+Further TODO
+============ 
+
+Data:
+-----
+Get real data
+
+Styling:
+-------
+The layout is very basic. The concentration is on server side implementation of various features.
+
+Results presentation:
+--------------------
+Using Google visualization tools 
+
+Functionality:
+-------------
+Voting results from different perspectives: 	
+				provide percentages
+				show results by counties
+				show yes/no/undecided votes: 	globally
+								by county
+								by constituency
+				add higher geographical level (England, Wales etc)
+
+Implementation:
+--------------
+The information regarding the yes/no/undecided could be stored differently. For simplicity I used a MySQL table where each yes/no/undecided decision is stored individually. I considered having just 2 rows storing the sum for each option and incrementing the value. This would however require locking the table/row for read and update during the transaction and this could be a problem if the application was heavily used. Another possibility would be a NoSQL approach.
+
+Database:
+Check the correctness of indexes.
+
+Perl code:
+Add missing sorting
+Add comments and documentation
+
+
+Nice to have:
+------------
+Choice between different types of graphical representation of the voting results : pie charts/column charts/bar charts/maps etc
+
+
+
+
+
+
