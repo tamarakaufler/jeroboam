@@ -10,9 +10,9 @@ use encoding 'utf8';
 ## connect to mongodb,database uc_token_translations db
 ##	properties: token, brand, page, locale, value
 
-my $mongo_conn = MongoDB::Connection->new;
-my $mongo_db   = $mongo_conn->uc_token_translations;
-my $tokens_table     = $mongo_db->tokens;
+my $mongo_conn	 = MongoDB::Connection->new;
+my $mongo_db   	 = $mongo_conn->uc_token_translations;
+my $tokens_table = $mongo_db->tokens;
 
 get '/magnolia_mock/:brand/:page/:locale' => sub {
   my $self = shift;
@@ -41,15 +41,27 @@ say "in magnolia_mock2/save";
 
   say "\t new value = $token_after->{value}";
 
-  $self->render(json => { id => $token_id, value => $token_after->{value}, value_fr => $token_after->{value_fr}});
+  $self->render(json => { id => $token_id, value => $token_after->{value}});
 
+};
+
+get '/magnolia_mock3/delete/:id' => sub {
+  my $self = shift;
+
+  say "in magnolia_mock3/delete";
+
+  my $token_id 	= $self->param('id');
+  my $token_oid = MongoDB::OID->new(value => $token_id);
+  $tokens_table->remove( { _id => $token_oid } );
+
+  my $token = $tokens_table->find_one({_id => MongoDB::OID->new(value => $token_id)});
+  say "Did not delete" if $token;
+
+  $self->render(json => { id => $token_id });
 };
 
 get '/magnolia_api_mock/:brand/:locale' => sub {
   my $self = shift;
-
- say ">>> brand = "  . $self->param('brand');
- say ">>> locale = " . $self->param('locale');
 
   my ($brand, $locale) = ($self->param('brand'), $self->param('locale'));
   my @tokens = _get_tokens($brand, $locale);
@@ -64,16 +76,16 @@ sub _get_tokens {
 	if ($brand) {
 		$search->{brand} = $brand;
 	}
-	if ($locale) {
+	elsif ($locale) {
 		$search->{locale} = $locale;
 	}
-	if ($page) {
+	elsif ($page) {
 		$search->{page} = $page;
 	}
 
 	print Dumper($search);
 
-    my $tokens_on_demand = $tokens_table->find($search);
+        my $tokens_on_demand = $tokens_table->find($search);
 
 	my $found4page 	= [];
 	my $json  	= {};
@@ -88,10 +100,7 @@ sub _get_tokens {
 			 };
 		push @$found4page, $token if $page && $page eq $page_token->{page};
 
-        my $page = ($page_token->{page} eq 'global') ? '' : $page_token->{page} . '/';
-        my $magnolia_page = '/' . $page_token->{website} . '/my/checkout/' . $page;
-
-		$json->{ $magnolia_page }{ $name }{ value } = $page_token->{value};
+		$json->{ $page_token->{page} }{ $name }{ value } = $page_token->{value};
 	}
 	
 	return ($found4page, $json);
@@ -105,7 +114,7 @@ __DATA__
 <!DOCTYPE html>
 <html>
   <head>
-  <title>Mock Magnolia - Mojolicious rocks!</title>
+  <title>Tokens CMS - Mojolicious rocks!</title>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
   <script>
@@ -113,11 +122,62 @@ __DATA__
 		  $(".update_token").click(function(){
 			var token_id   = $(this).attr('token_id');
 			var token_value=$("input[id='" + token_id + "']").val();
-			// alert(token_id  + ' - ' + token_value);
-	
+
 			var jqxhr = $.get( "http://127.0.0.1:3000/magnolia_mock2/save/" + token_id + '/' + encodeURI(token_value), function( data ) {
-				alert(data);
 		  	}).fail(function(jqxhr, error) { error });
+
+		  }); 
+		  $(".delete_token").click(function(){
+			alert('deleting');
+			var token_id   = $(this).attr('token_id');
+
+			var jqxhr = $.get( "http://127.0.0.1:3000/magnolia_mock3/delete/" + token_id, function( data ) {
+				alert( "Deleted" );
+				$("#token_" + token_id).remove();
+		  	}).fail(function(jqxhr, error) { alert(error) });
+
+		  }); 
+
+		  $("#create_button").click(function(){
+			alert('creating');
+
+
+//			$("body")
+//			.append('<div id="foo">')
+//			.append('<input type="text" id="bar">')
+//			;
+
+
+			// create the tr element with 4 td elements
+			$("table")
+			.css({ color:"red" })
+			.append('<tr id="foo">');
+
+			for ( var i = 0; i < 4; i++ ) {
+				var afoo = 'afoo' + i;
+				var abar = 'abar' + i;
+				var bfoo = 'bfoo' + i;
+				var bbar = 'bbar' + i;
+				$("#foo")
+					 .append('<td id="' + afoo + '">');				
+				$("#" + afoo)
+					 .append('<input id="' + abar + '">');
+				if (i == 3) {
+					$("#foo")
+						 .append('<td id="' + bfoo + '">');
+					$("#" + bfoo)
+					 	 .append('<button id="' + bbar + '" value="Save new token">');
+				else if (i == 4) {
+					$("#foo")
+						 .append('<td id="' + cfoo + '">');
+				}
+			}
+//			$("#foo")
+//				 .append('<td id="' + bfoo + '">');
+//			$("#bfoo")
+//				 .append('<button id="' + bbar + '" value="Save new token">');
+//			$("#foo")
+//				 .append('<td id="' + cfoo + '">');
 
 		  }); 
 	  }); 
@@ -129,12 +189,19 @@ __DATA__
 
 	<table>
 		% for my $token (@$tokens) {
-		<tr>
+		<tr id="token_<%= $token->{id} %>">
   			<td><%= $token->{name} %></td>
 			<td><input id="<%=$token->{id} %>" type="text" value="<%= $token->{value} %>"></td>
 			<td><button class="update_token" token_id="<%= $token->{id} %>">Update</button></td>
+  			<td><button class="delete_token" token_id="<%= $token->{id} %>">Delete</button></td>
 		</tr>
 		% }
+		<tr>
+  			<td></td>
+  			<td></td>
+  			<td></td>
+  			<td id="create_token"><button id="create_button">Add new token</button></td>
+		</tr>
 	</table>
 
   </body>
