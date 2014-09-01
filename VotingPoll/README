@@ -1,5 +1,4 @@
-Requirements: Linux/MySQL/Perl (5.10 minimum)
---------------------------------------------
+Requirements: Linux/MySQL/Perl (5.14 minimum)
 --------------------------------------------
 
 1)
@@ -18,19 +17,18 @@ DBIx::Class
 Template::Toolkit
 JSON
 
-To test the application, please, run the development server:
+1) Set up MySQL database by running:
+    mysql -u root -p < user.sql
+    mysql -u root -p < schema.sql
+
+2) To test the application, run the development server:
 	script/votingpoll_server.pl -p 3010
 
-then in the browser:
+3) Then in the browser:
 	http://localhost:3010/voting/poll
 
-3)
-Further TODO
-============ 
-
-Data:
------
-Get real data
+To repeat the voting, rerun:
+	http://localhost:3010/voting/poll
 
 Styling:
 -------
@@ -38,10 +36,19 @@ The layout is very basic. The concentration is on server side implementation of 
 
 Results presentation:
 --------------------
-Using Google visualization tools 
+Google visualization tools 
 
-Functionality:
--------------
+
+3)
+Further TODO
+============ 
+
+Data:
+-----
+Get real political map data
+
+Scope for functionality improvement:
+-----------------------------------
 Voting results from different perspectives: 	
 				provide percentages
 				show results by counties
@@ -52,22 +59,12 @@ Voting results from different perspectives:
 
 Implementation:
 --------------
-The information regarding the yes/no/undecided could be stored differently. For simplicity I used a MySQL table where each yes/no/undecided decision is stored individually. I considered having just 2 rows storing the sum for each option and incrementing the value. This would however require locking the table/row for read and update during the transaction and this could be a problem if the application was heavily used. Another possibility would be a NoSQL approach.
+The information about yes/no/undecided votes is stored in an InnoDB table. Another possibility could be a NoSQL approach.
 
 Database:
-Check the correctness of indexes.
+Check usage of indexes according to used SQL queries.
 
 Perl code:
 Add missing sorting
 Add comments and documentation
-
-
-Nice to have:
-------------
-Choice between different types of graphical representation of the voting results : pie charts/column charts/bar charts/maps etc
-
-
-
-
-
 
