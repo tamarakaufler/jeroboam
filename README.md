@@ -20,7 +20,7 @@ Provides:
 * very basic GUI for updating token translations
 * RESTful API for providing token translations for a specified brand/page/locale
                                     brand:  default
-                                    page:   billing, delivery, address - show local page tokens
+                                    page:   billing, delivery, addresses_add - show local page tokens
                                             global - shows global tokens
                                     locale: en, fr
 

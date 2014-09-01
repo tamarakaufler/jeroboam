@@ -1,4 +1,11 @@
 #!/usr/bin/perl
+=head2 insert_tokens.pl
+
+inserts tokens and their English and French translations into Mongo database
+for use with TokensCMS
+
+=cut
+
 use v5.14;
 use autodie;
 
@@ -8,22 +15,19 @@ use MongoDB::OID;
 use Data::Dumper qw(Dumper);
 
 ## connect to mongodb,database uc_token_translations db
-##	properties: token, brand, page, locale, value
+##    properties: token, brand, page, locale, value
 
-my $mongo_conn   = MongoDB::Connection->new;
-my $mongo_db 	 = $mongo_conn->uc_token_translations;
-my $tokens_table = $mongo_db->tokens;
+my $client       = MongoDB::MongoClient->new;
+my $db           = $client->get_database( 'uc_token_translations' );
+my $tokens_table = $db->get_collection('tokens');
 
-my $tokens_on_demand = $tokens_table->find({ brand => 'default',
-                                       page  => 'billing',
-                                       locale => 'en' });
+my $tokens_on_demand = $tokens_table->find({ brand  => 'default',
+                                             page   => 'billing',
+                                             locale => 'en' });
 
 while (my $page_tokens = $tokens_on_demand->next) {
-	say Dumper($page_tokens);
+    say Dumper($page_tokens);
 }
-
-#exit;
-
 ##==============================================================
 
 my $uc_base    = '/my/checkout/';
@@ -43,10 +47,10 @@ my $input = {
                   "URLS_TERMS" => "I shall deal with you on my terms",
                   "META_PHONE_NUMBER" => "Call us!!!",
                   "META_EULARIAN" => "photobox-uk",
-		        "ERRORS.NO_BASKET" => "There is no basket!!",
-		        "ERRORS.NOT_LOGGED_IN" => "Log in, you rascal :O",
-		        "ERRORS.MISMATCH_PASSWORD" => "They are different!!",
-		        "ERRORS.EMPTY_BASKET" => "Why is your basket empty!!",
+                  "ERRORS.NO_BASKET" => "There is no basket!!",
+                  "ERRORS.NOT_LOGGED_IN" => "Log in, you rascal :O",
+                  "ERRORS.MISMATCH_PASSWORD" => "They are different!!",
+                  "ERRORS.EMPTY_BASKET" => "Why is your basket empty!!",
                   "TOKENS_PROGRESS_BAR_STAGE_1" => "Clubs",
                   "TOKENS_PROGRESS_BAR_STAGE_2" => "Spades",
                   "TOKENS_PROGRESS_BAR_STAGE_3" => "Hearts",
@@ -62,10 +66,10 @@ my $input = {
                   "URLS_TERMS" => "I shall deal with you on my terms",
                   "META_PHONE_NUMBER" => "Call us!!!",
                   "META_EULARIAN" => "photobox-uk",
-		        "ERRORS.NO_BASKET" => "There is no basket!!",
-		        "ERRORS.NOT_LOGGED_IN" => "Log in, you rascal :O",
-		        "ERRORS.MISMATCH_PASSWORD" => "They are different!!",
-		        "ERRORS.EMPTY_BASKET" => "Why is your basket empty!!",
+                  "ERRORS.NO_BASKET" => "There is no basket!!",
+                  "ERRORS.NOT_LOGGED_IN" => "Log in, you rascal :O",
+                  "ERRORS.MISMATCH_PASSWORD" => "They are different!!",
+                  "ERRORS.EMPTY_BASKET" => "Why is your basket empty!!",
                   "TOKENS_PROGRESS_BAR_STAGE_1" => "Clubs",
                   "TOKENS_PROGRESS_BAR_STAGE_2" => "Spades",
                   "TOKENS_PROGRESS_BAR_STAGE_3" => "Hearts",
@@ -87,10 +91,10 @@ my $input = {
                   "URLS_TERMS" => "I shall deal with you on my terms",
                   "META_PHONE_NUMBER" => "Call us!!!",
                   "META_EULARIAN" => "photobox-uk",
-		        "ERRORS.NO_BASKET" => "There is no basket!!",
-		        "ERRORS.NOT_LOGGED_IN" => "Log in, you rascal :O",
-		        "ERRORS.MISMATCH_PASSWORD" => "They are different!!",
-		        "ERRORS.EMPTY_BASKET" => "Why is your basket empty!!",
+                  "ERRORS.NO_BASKET" => "There is no basket!!",
+                  "ERRORS.NOT_LOGGED_IN" => "Log in, you rascal :O",
+                  "ERRORS.MISMATCH_PASSWORD" => "They are different!!",
+                  "ERRORS.EMPTY_BASKET" => "Why is your basket empty!!",
                   "TOKENS_PROGRESS_BAR_STAGE_1" => "Clubs",
                   "TOKENS_PROGRESS_BAR_STAGE_2" => "Spades",
                   "TOKENS_PROGRESS_BAR_STAGE_3" => "Hearts",
@@ -111,10 +115,10 @@ my $input = {
                   "URLS_TERMS" => "I shall deal with you on my terms",
                   "META_PHONE_NUMBER" => "Call us!!!",
                   "META_EULARIAN" => "photobox-uk",
-		        "ERRORS.NO_BASKET" => "There is no basket!!",
-		        "ERRORS.NOT_LOGGED_IN" => "Log in, you rascal :O",
-		        "ERRORS.MISMATCH_PASSWORD" => "They are different!!",
-		        "ERRORS.EMPTY_BASKET" => "Why is your basket empty!!",
+                  "ERRORS.NO_BASKET" => "There is no basket!!",
+                  "ERRORS.NOT_LOGGED_IN" => "Log in, you rascal :O",
+                  "ERRORS.MISMATCH_PASSWORD" => "They are different!!",
+                  "ERRORS.EMPTY_BASKET" => "Why is your basket empty!!",
                   "TOKENS_PROGRESS_BAR_STAGE_1" => "Clubs",
                   "TOKENS_PROGRESS_BAR_STAGE_2" => "Spades",
                   "TOKENS_PROGRESS_BAR_STAGE_3" => "Hearts",
@@ -132,10 +136,10 @@ my $input = {
                   "URLS_TERMS" => "I shall deal with you on my terms",
                   "META_PHONE_NUMBER" => "Call us!!!",
                   "META_EULARIAN" => "photobox-uk",
-		        "ERRORS.NO_BASKET" => "There is no basket!!",
-		        "ERRORS.NOT_LOGGED_IN" => "Log in, you rascal :O",
-		        "ERRORS.MISMATCH_PASSWORD" => "They are different!!",
-		        "ERRORS.EMPTY_BASKET" => "Why is your basket empty!!",
+                  "ERRORS.NO_BASKET" => "There is no basket!!",
+                  "ERRORS.NOT_LOGGED_IN" => "Log in, you rascal :O",
+                  "ERRORS.MISMATCH_PASSWORD" => "They are different!!",
+                  "ERRORS.EMPTY_BASKET" => "Why is your basket empty!!",
                   "TOKENS_PROGRESS_BAR_STAGE_1" => "Clubs",
                   "TOKENS_PROGRESS_BAR_STAGE_2" => "Spades",
                   "TOKENS_PROGRESS_BAR_STAGE_3" => "Hearts",
@@ -158,10 +162,10 @@ my $input = {
                   "URLS_TERMS" => "I shall deal with you on my terms",
                   "META_PHONE_NUMBER" => "Call us!!!",
                   "META_EULARIAN" => "photobox-uk",
-		        "ERRORS.NO_BASKET" => "There is no basket!!",
-		        "ERRORS.NOT_LOGGED_IN" => "Log in, you rascal :O",
-		        "ERRORS.MISMATCH_PASSWORD" => "They are different!!",
-		        "ERRORS.EMPTY_BASKET" => "Why is your basket empty!!",
+                  "ERRORS.NO_BASKET" => "There is no basket!!",
+                  "ERRORS.NOT_LOGGED_IN" => "Log in, you rascal :O",
+                  "ERRORS.MISMATCH_PASSWORD" => "They are different!!",
+                  "ERRORS.EMPTY_BASKET" => "Why is your basket empty!!",
                   "TOKENS_PROGRESS_BAR_STAGE_1" => "Clubs",
                   "TOKENS_PROGRESS_BAR_STAGE_2" => "Spades",
                   "TOKENS_PROGRESS_BAR_STAGE_3" => "Hearts",
@@ -178,10 +182,10 @@ my $input = {
                   "URLS_TERMS" => "I shall deal with you on my terms",
                   "META_PHONE_NUMBER" => "Call us!!!",
                   "META_EULARIAN" => "photobox-uk",
-		        "ERRORS.NO_BASKET" => "There is no basket!!",
-		        "ERRORS.NOT_LOGGED_IN" => "Log in, you rascal :O",
-		        "ERRORS.MISMATCH_PASSWORD" => "They are different!!",
-		        "ERRORS.EMPTY_BASKET" => "Why is your basket empty!!",
+                  "ERRORS.NO_BASKET" => "There is no basket!!",
+                  "ERRORS.NOT_LOGGED_IN" => "Log in, you rascal :O",
+                  "ERRORS.MISMATCH_PASSWORD" => "They are different!!",
+                  "ERRORS.EMPTY_BASKET" => "Why is your basket empty!!",
                   "TOKENS_PROGRESS_BAR_STAGE_1" => "Clubs",
                   "TOKENS_PROGRESS_BAR_STAGE_2" => "Spades",
                   "TOKENS_PROGRESS_BAR_STAGE_3" => "Hearts",
@@ -198,10 +202,10 @@ my $input = {
                   "URLS_TERMS" => "I shall deal with you on my terms",
                   "META_PHONE_NUMBER" => "Call us!!!",
                   "META_EULARIAN" => "photobox-uk",
-		        "ERRORS.NO_BASKET" => "There is no basket!!",
-		        "ERRORS.NOT_LOGGED_IN" => "Log in, you rascal :O",
-		        "ERRORS.MISMATCH_PASSWORD" => "They are different!!",
-		        "ERRORS.EMPTY_BASKET" => "Why is your basket empty!!",
+                  "ERRORS.NO_BASKET" => "There is no basket!!",
+                  "ERRORS.NOT_LOGGED_IN" => "Log in, you rascal :O",
+                  "ERRORS.MISMATCH_PASSWORD" => "They are different!!",
+                  "ERRORS.EMPTY_BASKET" => "Why is your basket empty!!",
                   "TOKENS_PROGRESS_BAR_STAGE_1" => "Clubs",
                   "TOKENS_PROGRESS_BAR_STAGE_2" => "Spades",
                   "TOKENS_PROGRESS_BAR_STAGE_3" => "Hearts",
@@ -215,25 +219,25 @@ my $input = {
             };
 
 foreach my $page (keys %$input) {
-	foreach my $token (keys %{$input->{$page}}) {
-	    my $data = {
-				"brand"  => 'default',
-				"website"=> 'photobox.com',
-				"page"   => $page,
-				"locale" => 'en',
-				"token"  => $token,
-				"value"  => $input->{$page}{$token},
-	    };
-	    $tokens_table->insert($data);
-	    $data = {
-				"brand"  => 'default',
-				"website"=> 'photobox.com',
-				"page"   => $page,
-				"locale" => 'fr',
-				"token"  => $token,
-				"value"  => "© " . $input->{$page}{$token},
-	    };
-	    $tokens_table->insert($data);
-	}
+    foreach my $token (keys %{$input->{$page}}) {
+        my $data = {
+                "brand"  => 'default',
+                "website"=> 'photobox.com',
+                "page"   => $page,
+                "locale" => 'en',
+                "token"  => $token,
+                "value"  => $input->{$page}{$token},
+        };
+        $tokens_table->insert($data);
+        $data = {
+                "brand"  => 'default',
+                "website"=> 'photobox.com',
+                "page"   => $page,
+                "locale" => 'fr',
+                "token"  => $token,
+                "value"  => "© " . $input->{$page}{$token},
+        };
+        $tokens_table->insert($data);
+    }
 }
 
