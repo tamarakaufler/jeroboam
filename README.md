@@ -1,19 +1,19 @@
 jeroboam
 ========
 
-miscellany of small web applications
+miscellany of small web applications and web non related projects
 
 Perl based
 ==========
 
 TokensCMS:
 ---------
-my first Mojolicious application/NoSQL database
+my first attempt at using Mojolicious application and NoSQL database
 
 Mojolicious framework, MongoDB
 
 Purpose:
-implemented to provide mock input through an RESTful API for a Photobox Universal Checkout project while the system for providing the API was being built
+provides mock input through an RESTful API for a work project while the system for providing the API was being built
 
 Provides:
 * script for populating Mongo database with tokens and their translations
@@ -27,12 +27,37 @@ Provides:
 VotingPoll:
 ----------
 
-Catalyst application, MySQL
+Perl, Catalyst, DBIx::Class, Template::Toolkit, MySQL, jQuery
 
 Purpose:
-implemented to use Google visualization
+use of Google visualization
 
 Provides:
 * basic GUI for a straw poll
 * shows a pie chart of votes on a national and constituency level
+
+WardrobeManager and wardrobe_manager:
+------------------------------------
+
+Perl, DBIx::Class, Template::Toolkit, MySQL, jQuery
+
+Purpose:
+implemented the same functionality with and without Catalyst
+
+WardrobeManager  ... Catalyst framework
+wardrobe_manager ... CGI application with MVC design
+
+
+Spreadsheet:
+-----------
+
+Perl, OOP, Moose
+game.pl ... script to test the implementation 
+
+SnapGame:
+--------
+
+Perl, OOP
+game.pl ... play snap
+(matching both value and suit is buggy)
 
