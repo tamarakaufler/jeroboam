@@ -47,6 +47,8 @@ implemented the same functionality with and without Catalyst
 WardrobeManager  ... Catalyst framework
 wardrobe_manager ... CGI application with MVC design
 
+CAVEAT: unicode currently not working due to what seems to be a bug in
+Encode.pm
 
 Spreadsheet:
 -----------
