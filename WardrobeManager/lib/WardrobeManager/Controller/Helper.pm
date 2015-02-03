@@ -9,6 +9,7 @@ provides helper methods
 use strict;
 use warnings;
 use utf8;
+use v5.010;
 
 use Text::CSV::Encoded;
 
@@ -52,8 +53,10 @@ sub aggregate_data {
     my ( $fh ) = shift;
     my ( @clothings, @categories );
 
-    my $csv = Text::CSV::Encoded->new() or die "Error: cannot create Text::CSV::Encoded";
-    $csv->encoding( 'utf8' );
+    my $csv = Text::CSV::Encoded->new ({
+        encoding_in  => "utf-8", 
+        encoding_out => "utf-8", 
+    });
 
     my $i = 0;
     while ( my $row = $csv->getline( $fh ) ) {
