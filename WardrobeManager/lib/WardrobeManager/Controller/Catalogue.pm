@@ -1,12 +1,10 @@
 package WardrobeManager::Controller::Catalogue;
-#use Moose;
-use namespace::autoclean;
 
-#BEGIN {extends 'Catalyst::Controller'; }
 use base 'Catalyst::Controller';
 
 use lib qw( .. );
 use utf8;
+use open ':encoding(utf8)';
 
 use Text::CSV::Encoded;
 use WardrobeManager::Controller::Helper;

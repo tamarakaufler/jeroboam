@@ -8,8 +8,9 @@ provides helper methods
 
 use strict;
 use warnings;
-use utf8;
 use v5.010;
+use utf8;
+#use open ':encoding(utf8)';
 
 use Text::CSV::Encoded;
 
@@ -54,8 +55,8 @@ sub aggregate_data {
     my ( @clothings, @categories );
 
     my $csv = Text::CSV::Encoded->new ({
-        encoding_in  => "utf-8", 
-        encoding_out => "utf-8", 
+        #encoding_in  => "utf-8", 
+        #encoding_out => "utf-8", 
     });
 
     my $i = 0;

@@ -10,6 +10,7 @@ __PACKAGE__->config(
         dsn => 'dbi:mysql:dbname=wardrobe',
         user => 'wardrobe',
         password => 'StRaW101',
+        mysql_enable_utf8 => 1,
     }
 );
 
