@@ -55,8 +55,8 @@ sub aggregate_data {
     my ( @clothings, @categories );
 
     my $csv = Text::CSV::Encoded->new ({
-        #encoding_in  => "utf-8", 
-        #encoding_out => "utf-8", 
+        encoding_in  => "utf-8", 
+        encoding_out => "utf-8", 
     });
 
     my $i = 0;
