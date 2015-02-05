@@ -36,17 +36,6 @@ Provides:
 * basic GUI for a straw poll
 * shows a pie chart of votes on a national and constituency level
 
-WardrobeManager and wardrobe_manager:
-------------------------------------
-
-Perl, DBIx::Class, Template::Toolkit, MySQL, jQuery
-
-Purpose:
-implemented the same functionality with and without Catalyst
-
-WardrobeManager  ... Catalyst framework
-wardrobe_manager ... CGI application with MVC design
-
 Spreadsheet:
 -----------
 
